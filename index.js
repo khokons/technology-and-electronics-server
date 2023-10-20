@@ -1,19 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 3389
 
 // MiddleWare-----------
 app.use(cors());
 app.use(express.json());
-
-// technologyMaster
-
-// BLkhDRlaVNelh0JE
-
-
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.0jt69he.mongodb.net/?retryWrites=true&w=majority`;
@@ -33,6 +27,24 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+    const techCollection = client.db('techcDB').collection('techs')
+
+    app.get('/techs', async(req, res)=>{
+        const cursor = techCollection.find();
+        const result = await cursor.toArray()
+        res.send(result);
+    })
+
+    
+app.post("/techs", async (req, res) => {
+      const newTech = req.body;
+       console.log(newTech);
+      const result = await techCollection.insertOne(newTech);
+      res.send(result);
+    });
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
